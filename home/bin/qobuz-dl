@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+PATCHED_ROOT = os.path.expanduser("~/.local/share/qobuz-dl-patched")
+
+if PATCHED_ROOT not in sys.path:
+    sys.path.insert(0, PATCHED_ROOT)
+
+from qobuz_dl.cli import main
+
+
+if __name__ == "__main__":
+    sys.exit(main())

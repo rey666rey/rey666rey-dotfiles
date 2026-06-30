@@ -1,0 +1,39 @@
+#!/bin/sh
+set -eu
+
+last_state=""
+last_reset=0
+last_lineout_fix=0
+
+fix_lineout() {
+  current=$(amixer -c 0 sget 'Line Out' 2>/dev/null | awk -F'[][]' '/Front Left:/ { print $2; exit }')
+  if [ "$current" != "100%" ]; then
+    amixer -c 0 sset 'Line Out' 100% >/dev/null 2>&1 || true
+  fi
+}
+
+while :; do
+  state=$(pactl list sinks 2>/dev/null | awk '/^[[:space:]]*State:/ { print $2; exit }')
+
+  if [ -z "${state:-}" ]; then
+    sleep 3
+    continue
+  fi
+
+  now=$(date +%s)
+  if [ $((now - last_lineout_fix)) -ge 3 ]; then
+    fix_lineout
+    last_lineout_fix=$now
+  fi
+
+  if [ "$state" = "RUNNING" ] && [ "$last_state" != "RUNNING" ]; then
+    if [ $((now - last_reset)) -ge 20 ]; then
+      fix_lineout
+      sudo -n /usr/local/bin/tas2781-reset >/dev/null 2>&1 || true
+      last_reset=$now
+    fi
+  fi
+
+  last_state="$state"
+  sleep 2
+done

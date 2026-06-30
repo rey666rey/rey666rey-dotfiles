@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Rainy Morning
+Description=Soft gray rainy morning theme with a gentle LUKS password prompt
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/rainy-morning
+ScriptFile=/usr/share/plymouth/themes/rainy-morning/rainy-morning.script

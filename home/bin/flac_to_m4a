@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+input_dir="${1:-.}"
+output_dir="${2:-$HOME/m4a-music}"
+cover_size="${COVER_SIZE:-480}"
+audio_bitrate="${AUDIO_BITRATE:-256k}"
+skip_existing="${SKIP_EXISTING:-1}"
+
+if [[ ! -d "$input_dir" ]]; then
+  echo "Input directory does not exist: $input_dir" >&2
+  exit 1
+fi
+
+if ! command -v ffmpeg >/dev/null 2>&1; then
+  echo "Missing required command: ffmpeg" >&2
+  exit 1
+fi
+
+abs_input_dir="$(realpath "$input_dir")"
+mkdir -p "$output_dir"
+
+declare -A dir_cover_cache
+
+normalize_cover() {
+  local source="$1"
+  local dest="$2"
+
+  ffmpeg -nostdin -loglevel error -y \
+    -i "$source" \
+    -an \
+    -vf "scale='min(${cover_size},iw)':'min(${cover_size},ih)':force_original_aspect_ratio=decrease" \
+    -frames:v 1 \
+    -q:v 2 \
+    "$dest"
+}
+
+extract_embedded_cover() {
+  local track="$1"
+  local dest="$2"
+
+  if ffmpeg -nostdin -loglevel error -y \
+    -i "$track" \
+    -an \
+    -map 0:v:0 \
+    -vf "scale='min(${cover_size},iw)':'min(${cover_size},ih)':force_original_aspect_ratio=decrease" \
+    -frames:v 1 \
+    -q:v 2 \
+    "$dest"; then
+    return 0
+  fi
+
+  rm -f "$dest"
+  return 1
+}
+
+extract_directory_cover() {
+  local source_dir="$1"
+  local dest="$2"
+  local candidate
+
+  for candidate in \
+    cover.jpg cover.jpeg cover.png \
+    folder.jpg folder.jpeg folder.png \
+    front.jpg front.jpeg front.png \
+    album.jpg album.jpeg album.png; do
+    if [[ -f "$source_dir/$candidate" ]]; then
+      normalize_cover "$source_dir/$candidate" "$dest"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+find "$abs_input_dir" -type f -iname '*.flac' -print0 | while IFS= read -r -d '' f; do
+  rel="${f#"$abs_input_dir"/}"
+  src_dir="$(dirname "$f")"
+  out="$output_dir/$rel"
+  out="${out%.*}.m4a"
+
+  if [[ "$skip_existing" == "1" && -f "$out" ]]; then
+    continue
+  fi
+
+  out_dir="$(dirname "$out")"
+  track_base="$(basename "${f%.*}")"
+  embedded_cover_path="$out_dir/.${track_base}.cover.jpg"
+  dir_cover_path="$out_dir/cover.jpg"
+  cache_key="$src_dir"
+  cover_source=""
+  cleanup_cover=""
+
+  mkdir -p "$out_dir"
+
+  if extract_embedded_cover "$f" "$embedded_cover_path"; then
+    cover_source="$embedded_cover_path"
+    cleanup_cover="$embedded_cover_path"
+  else
+    if [[ -v dir_cover_cache["$cache_key"] ]]; then
+      cover_source="${dir_cover_cache["$cache_key"]}"
+    else
+      if extract_directory_cover "$src_dir" "$dir_cover_path"; then
+        cover_source="$dir_cover_path"
+      else
+        cover_source=""
+      fi
+      dir_cover_cache["$cache_key"]="$cover_source"
+    fi
+  fi
+
+  if [[ -n "$cover_source" && ! -f "$cover_source" ]]; then
+    cover_source=""
+  fi
+
+  if [[ -n "$cover_source" ]]; then
+    ffmpeg -nostdin -loglevel error -y \
+      -i "$f" \
+      -i "$cover_source" \
+      -map 0:a:0 \
+      -map 1:v:0 \
+      -map_metadata 0 \
+      -c:a aac \
+      -b:a "$audio_bitrate" \
+      -c:v mjpeg \
+      -disposition:v:0 attached_pic \
+      -metadata:s:v title="Album cover" \
+      -metadata:s:v comment="Cover (front)" \
+      "$out"
+  else
+    ffmpeg -nostdin -loglevel error -y \
+      -i "$f" \
+      -map 0:a:0 \
+      -map_metadata 0 \
+      -vn \
+      -c:a aac \
+      -b:a "$audio_bitrate" \
+      "$out"
+  fi
+
+  if [[ -n "$cleanup_cover" ]]; then
+    rm -f "$cleanup_cover"
+  fi
+done

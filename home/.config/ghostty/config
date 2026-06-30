@@ -1,0 +1,51 @@
+# Visual match for ~/.config/kitty/kitty.conf and colors.conf
+
+font-family = "JetBrainsMono Nerd Font Mono"
+font-size = 13
+
+background = #16161d
+foreground = #d9d7d2
+selection-foreground = #16161d
+selection-background = #c4b28a
+cursor-color = #c4b28a
+cursor-text = #16161d
+
+palette = 0=#1f1f28
+palette = 1=#eb6f92
+palette = 2=#a6d189
+palette = 3=#f6c177
+palette = 4=#7aa2f7
+palette = 5=#c4a7e7
+palette = 6=#8fbcbb
+palette = 7=#d9d7d2
+palette = 8=#4c4f69
+palette = 9=#f08ba8
+palette = 10=#b5e08c
+palette = 11=#f9d98c
+palette = 12=#8caaee
+palette = 13=#d4b8f0
+palette = 14=#9ccfd8
+palette = 15=#f2f0ec
+
+window-decoration = none
+window-padding-x = 8
+window-padding-y = 8
+window-padding-color = background
+window-width = 80
+window-height = 25
+window-theme = dark
+window-titlebar-background = #111117
+window-titlebar-foreground = #d9d7d2
+window-show-tab-bar = auto
+gtk-tabs-location = top
+gtk-toolbar-style = flat
+gtk-wide-tabs = false
+
+background-opacity = 1
+unfocused-split-opacity = 0.85
+split-divider-color = #46464f
+
+selection-word-chars = " @-./_~?&=%+#"
+clipboard-trim-trailing-spaces = false
+confirm-close-surface = false
+term = xterm-ghostty

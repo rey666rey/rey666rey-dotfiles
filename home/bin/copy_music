@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+input_dir="${1:-./shpring}"
+output_dir="${2:-./flac}"
+
+if [[ ! -d "$input_dir" ]]; then
+  echo "Input directory does not exist: $input_dir" >&2
+  exit 1
+fi
+
+mkdir -p "$output_dir"
+
+find "$input_dir" -type f -name "*.flac" -print0 | while IFS= read -r -d '' file; do
+  dir="$(dirname "$file")"
+  cover="$dir/cover.jpg"
+
+  # имя файла без пути
+  filename="$(basename "$file")"
+
+  # убираем "01. " в начале
+  title="$(echo "$filename" | sed -E 's/^[0-9]+\. //; s/\.flac$//')"
+
+  # берём имя папки
+  folder="$(basename "$dir")"
+
+  # извлекаем артиста (всё до " - ")
+  artist="$(echo "$folder" | sed -E 's/ - .*//')"
+
+  # итоговое имя
+  newname="$artist - $title.flac"
+  dest="$output_dir/$newname"
+
+  if [ -f "$cover" ]; then
+    cp "$file" "$dest"
+
+    metaflac --remove --block-type=PICTURE "$dest"
+    metaflac --import-picture-from="$cover" "$dest"
+  fi
+done

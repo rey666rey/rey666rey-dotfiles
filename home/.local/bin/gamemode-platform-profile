@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+profile="${1:-}"
+
+case "$profile" in
+  performance|balanced|quiet)
+    ;;
+  *)
+    echo "Usage: $0 {performance|balanced|quiet}" >&2
+    exit 2
+    ;;
+esac
+
+if command -v /usr/bin/legion_cli >/dev/null 2>&1; then
+  exec sudo -n /usr/bin/legion_cli set-feature PlatformProfileFeature "$profile"
+fi
+
+exec sudo -n /usr/bin/powerprofilesctl set "$profile"
