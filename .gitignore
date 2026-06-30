@@ -1,0 +1,18 @@
+# Local/runtime data that should not be committed.
+home/wolf/user-config/cfg/key.pem
+home/wolf/user-config/cfg/cert.pem
+home/wolf/user-config/cfg/backtrace.*.dump
+home/wolf/user-config/*/Desktop*/
+home/wolf/xfce-home/cache/*
+!home/wolf/xfce-home/cache/.gitkeep
+home/wolf/xfce-home/local/*
+!home/wolf/xfce-home/local/.gitkeep
+home/wolf/xfce-home/downloads/*
+!home/wolf/xfce-home/downloads/.gitkeep
+home/wolf/xfce-home/documents/*
+!home/wolf/xfce-home/documents/.gitkeep
+home/wolf/xfce-games/*
+!home/wolf/xfce-games/.gitkeep
+home/wolf/nvidia-compat32/*
+!home/wolf/nvidia-compat32/.gitkeep
+*.log

@@ -9,10 +9,11 @@ Personal system configuration backup for restoring the desktop after a reinstall
 - Terminal/UI config: Kitty, Ghostty, GTK, Qt, Matugen, Cava, Fastfetch, btop, htop
 - User scripts: `~/.config/bin`, selected `~/.local/bin`, selected `~/bin`
 - Wallpapers: `~/Pictures/Wallpapers`
+- Wolf Docker setup: compose file, active config, helper scripts and selected XFCE settings
 - Boot theming/config: GRUB, Plymouth, mkinitcpio
 - Package lists: native pacman packages, AUR packages, Flatpak apps
 
-Private keys, browser profiles, app sessions, caches, cloud/VPN secrets, tokens and personal document folders are intentionally not included.
+Private keys, browser profiles, app sessions, caches, cloud/VPN secrets, tokens, Wolf runtime data and personal document folders are intentionally not included.
 
 ## Restore
 

@@ -1,0 +1,23 @@
+services:
+  wolf:
+    image: ghcr.io/games-on-whales/wolf:stable
+    container_name: wolf
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES: all
+      WOLF_USE_ZERO_COPY: "FALSE"
+      WOLF_VIDEO_BUFFER_CAPS: "video/x-raw"
+    gpus: all
+    volumes:
+      - /home/rey/wolf/user-config:/etc/wolf:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /dev:/dev:rw
+      - /run/udev:/run/udev:rw
+    devices:
+      - /dev/dri
+      - /dev/uinput
+      - /dev/uhid
+    device_cgroup_rules:
+      - "c 13:* rmw"
