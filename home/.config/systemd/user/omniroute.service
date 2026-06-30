@@ -1,0 +1,9 @@
+[Unit]
+Description=omniroute
+
+[Service]
+ExecStart=/home/rey/.local/npm-global/bin/omniroute
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

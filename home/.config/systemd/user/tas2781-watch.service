@@ -1,0 +1,12 @@
+[Unit]
+Description=Watch PipeWire sink state and reinitialize TAS2781 when playback starts
+After=pipewire.service wireplumber.service
+
+[Service]
+Type=simple
+ExecStart=/home/rey/.local/bin/tas2781-watch
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

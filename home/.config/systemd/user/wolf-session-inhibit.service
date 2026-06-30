@@ -1,0 +1,12 @@
+[Unit]
+Description=Prevent host sleep while Wolf XFCE session is active
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/home/rey/wolf/host-tools/wolf-session-inhibit.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

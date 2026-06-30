@@ -123,6 +123,21 @@ restore_system() {
   restore_system_path "etc/default/grub"
   restore_system_path "etc/plymouth/plymouthd.conf"
   restore_system_path "etc/mkinitcpio.conf"
+  restore_system_path "etc/auto-cpufreq.conf"
+  restore_system_path "etc/intel-undervolt.conf"
+
+  if [[ -d "$ROOT_DIR/system/etc/modprobe.d" ]]; then
+    while IFS= read -r -d '' conf; do
+      restore_system_path "etc/modprobe.d/$(basename "$conf")"
+    done < <(find "$ROOT_DIR/system/etc/modprobe.d" -mindepth 1 -maxdepth 1 -type f -print0)
+  fi
+
+  if [[ -d "$ROOT_DIR/system/etc/systemd/system" ]]; then
+    while IFS= read -r -d '' unit; do
+      restore_system_path "etc/systemd/system/$(basename "$unit")"
+    done < <(find "$ROOT_DIR/system/etc/systemd/system" -mindepth 1 -maxdepth 1 -type f -print0)
+    sudo systemctl daemon-reload || true
+  fi
 
   if [[ -d "$ROOT_DIR/system/usr/share/plymouth/themes" ]]; then
     while IFS= read -r -d '' theme; do

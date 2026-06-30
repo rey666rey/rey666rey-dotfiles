@@ -10,6 +10,7 @@ Personal system configuration backup for restoring the desktop after a reinstall
 - User scripts: `~/.config/bin`, selected `~/.local/bin`, selected `~/bin`
 - Wallpapers: `~/Pictures/Wallpapers`
 - Wolf Docker setup: compose file, active config, helper scripts and selected XFCE settings
+- Extra services/config: user systemd units, Legion thermal configs, modprobe configs, omniroute compose file
 - Boot theming/config: GRUB, Plymouth, mkinitcpio
 - Package lists: native pacman packages, AUR packages, Flatpak apps
 
@@ -46,3 +47,5 @@ The script backs up overwritten files into `~/.dotfiles-restore-backup/<timestam
 ## Important after a clean reinstall
 
 Check `system/etc/default/grub` before restoring it. The saved file contains disk-specific boot parameters such as `cryptdevice=UUID=...` and `resume=/dev/mapper/...`; these can change after repartitioning or reinstalling.
+
+Some services are restored as unit files but not force-enabled. After `./install.sh --system`, enable only what is still relevant on the new install, for example `legiond.service`, `legiond-cpuset.timer`, and the user services under `~/.config/systemd/user/`.

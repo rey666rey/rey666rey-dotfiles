@@ -1,0 +1,4 @@
+rey ALL=(root) NOPASSWD: /usr/bin/legion_cli set-feature PlatformProfileFeature performance
+rey ALL=(root) NOPASSWD: /usr/bin/legion_cli set-feature PlatformProfileFeature balanced
+rey ALL=(root) NOPASSWD: /usr/bin/powerprofilesctl set performance
+rey ALL=(root) NOPASSWD: /usr/bin/powerprofilesctl set balanced

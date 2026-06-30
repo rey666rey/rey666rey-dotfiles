@@ -1,0 +1,11 @@
+[Unit]
+Description=Play video at midnight
+
+[Service]
+Type=forking
+ExecStart=/home/rey/play_video.sh
+Environment="WAYLAND_DISPLAY=wayland-1"
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
+
+[Install]
+WantedBy=default.target
